@@ -19,8 +19,10 @@ namespace MauiNurAppTemplate
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-
-#if __IOS__ || __MACCATALYST__
+#if __ANDROID__
+            NurApiDotNet.Android.Support.Init(
+            Microsoft.Maui.ApplicationModel.Platform.AppContext);
+#elif __IOS__ || __MACCATALYST__
             NurApiDotNet.iOS.Support.Init();
 #elif WINDOWS
             NordicID.NurApi.USBTransport.Support.Init();
