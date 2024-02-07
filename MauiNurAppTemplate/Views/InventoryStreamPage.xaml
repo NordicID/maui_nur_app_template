@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiNurAppTemplate.InventoryStreamPage"
+             Title="Inventory Stream">
+    
+    <ContentPage.Content>
+
+        <StackLayout Orientation="Vertical">
+            
+            <Label FontSize="68" FontAttributes="Bold" HorizontalOptions="Center" Text="{Binding TagCount}" />
+            <ActivityIndicator Color="DarkBlue" HorizontalOptions="Center" Scale="1"  IsRunning="{Binding ActivityRunning}"/>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Label Padding="10,0" VerticalOptions="Center" FontSize="16" FontAttributes="None" HorizontalOptions="Start" Text="TxLevel " />
+                <Label  FontSize="18" FontAttributes="Bold" Text="{Binding TxLevelText}" />
+                <Label FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Text=" mW" />
+            </StackLayout>
+
+            <Slider HeightRequest="70" WidthRequest="280" Value="{Binding SliderValue}" ValueChanged="OnTxLevelChanged" />            
+            <Button Margin="10,5" CornerRadius="70" BackgroundColor="DarkBlue" Clicked="OnStartStop" HorizontalOptions="Center" FontSize="Large" Text="{Binding StartStopRead}" TextColor="White" HeightRequest="140" WidthRequest="140" />
+            
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Label FontSize="14" Margin="0,5" FontAttributes="None" VerticalTextAlignment="Center" HorizontalOptions="Center" Text="Silence" />
+                <CheckBox IsChecked="{Binding SilenceMode} " />
+                <Label FontSize="14" Margin="0,5" FontAttributes="None" VerticalTextAlignment="Center" HorizontalOptions="Center" Text="Read tag model" />
+                <CheckBox IsChecked="{Binding ReadTagModel} " />
+            </StackLayout>
+
+            <StackLayout Margin="10,20" Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="EndAndExpand">
+                <Button Margin="10,20" BackgroundColor="Black" Clicked="OnClear" CornerRadius="8" HorizontalOptions="StartAndExpand" Text="Clear" TextColor="White" WidthRequest="140" />
+                <Button Margin="10,20" BackgroundColor="DarkGreen" Clicked="OnShare" CornerRadius="8" HorizontalOptions="EndAndExpand" Text="Share results" TextColor="White" WidthRequest="140" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

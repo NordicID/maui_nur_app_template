@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiNurAppTemplate.Views.BarcodePage"
+             Title="Barcode Read">
+    <ContentPage.Content>
+
+        <StackLayout Orientation="Vertical">
+
+            <Label Margin="10,20" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Text="{Binding BarcodeText}" />
+            <ActivityIndicator Color="DarkBlue" HorizontalOptions="Center" Scale="1"  IsRunning="{Binding ActivityRunning}"/>
+
+            <Button IsEnabled="{Binding EnableReadButton}" Margin="10,5" CornerRadius="70" BackgroundColor="Yellow" Clicked="OnReadBarcode" HorizontalOptions="Center" FontSize="Large" Text="READ" TextColor="Black" HeightRequest="140" WidthRequest="140" />
+            
+            <StackLayout Margin="10,20" Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="EndAndExpand">               
+                <Button Margin="10,20" BackgroundColor="DarkGreen" Clicked="OnClose" CornerRadius="8" HorizontalOptions="EndAndExpand" Text="Close" TextColor="White" WidthRequest="140" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
