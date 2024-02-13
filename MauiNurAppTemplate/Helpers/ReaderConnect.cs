@@ -1,4 +1,7 @@
-﻿using NurApiDotNet;
+﻿#if __ANDROID__
+using NordicID.NurApi.Android.Helpers;
+#endif
+using NurApiDotNet;
 using System.Diagnostics;
 
 
@@ -14,8 +17,40 @@ namespace MauiNurAppTemplate.Helpers
             App.Nur.ConnectedEvent += OnNurApi_ConnectedEvent;
             App.Nur.ConnectionStatusEvent += OnNurApi_ConnectionStatusEvent;
             App.Nur.DisconnectedEvent += OnNurApi_DisconnectedEvent;
+
+#if __ANDROID__
+            App.Nur.PermissionRequiredEvent += OnNur_PermissionRequiredEvent; ;
+#endif
+            
         }
-                
+#if __ANDROID__
+        private static void OnNur_PermissionRequiredEvent(object? sender, PermissionRequiredEventArgs e)
+        {
+            Utilities.ShowSnackbar($"Attempting to request permissions for {e.Uri}...", Colors.White, Colors.Black, 10);
+            if (e.Uri.Scheme == "usb")
+            {
+                NurApiUSBDevicePermissionRequest.Request(e.Uri, (isGranted) => OnUserPermissionResponse(e.Uri, isGranted)); // Forwarding callback result 
+            }
+        }
+
+        // Handling permission result.
+        private static void OnUserPermissionResponse(Uri connectionUri, bool isGranted)
+        {
+            if (!isGranted)
+            {
+                Utilities.ShowSnackbar($"Permission was not granted for the USB device ´{connectionUri}´",Colors.Orange,Colors.Black);
+                return;
+            }
+
+            Utilities.ShowSnackbar($"Permission was successfully granted for {connectionUri}", Colors.Green, Colors.Black);
+            Uri currentDeviceUri = App.Nur.ConnectedDeviceUri;
+            if (currentDeviceUri != null)
+                App.Nur.Disconnect();
+
+            App.Nur.Connect(connectionUri);
+        }
+#endif
+
         /// <summary>
         /// Provides simple list of discovered readers where user can choose to connect or disconnect existing connection.
         /// </summary>
@@ -24,8 +59,7 @@ namespace MauiNurAppTemplate.Helpers
         public static async Task SelectReader(Page page)
         {
             try
-            {
-                await Task.Delay(500); //give some time to discover if discovery started recently.
+            {                
                 List<string> deviceNames = new List<string>();
 
                 Uri currentDeviceUri = App.Nur.ConnectedDeviceUri;
@@ -101,6 +135,22 @@ namespace MauiNurAppTemplate.Helpers
             {
                 if (App.DeviceDiscovery.ReadersDiscovered.ContainsKey(selectedDevice))
                 {
+#if __ANDROID__
+                    try
+                    {
+                        Uri uri = App.DeviceDiscovery.ReadersDiscovered[selectedDevice];
+                        if (uri.Scheme == "usb")
+                        {                           
+                            NurApiUSBDevicePermissionRequest.Request(uri, (isGranted) => OnUserPermissionResponse(uri, isGranted)); // Forwarding callback result                        
+                            return; //Connection for this is in OnUserPermissionResponse handler
+                        }
+                    }
+                    catch(Exception ex) 
+                    {
+                        Utilities.ShowSnackbar($"Error reconnect {ex.Message}", Colors.Red, Colors.Black);
+                    }
+#endif
+
                     Uri currentDeviceUri = App.Nur.ConnectedDeviceUri;
                     if (currentDeviceUri != null)
                         App.Nur.Disconnect();
@@ -110,7 +160,7 @@ namespace MauiNurAppTemplate.Helpers
             }
             catch (Exception ex)
             {
-                Utilities.ShowSnackbar($"Error connecting {selectedDevice}!  {ex.Message}", Colors.Red, Colors.Black);
+                Utilities.ShowSnackbar($"Error connecting {App.DeviceDiscovery.ReadersDiscovered[selectedDevice]}!  {ex.Message}", Colors.Red, Colors.Black);
             }
         }
 
@@ -141,10 +191,10 @@ namespace MauiNurAppTemplate.Helpers
                 rdrUri = new Uri(lastConnectedReaderUri);
 
             if (rdrUri != null)
-            {
+            {               
                 App.Nur.AutoReconnect = true;
                 App.Nur.Connect(rdrUri);
-            }
+            }            
         }
 
         /// <summary>
@@ -191,8 +241,8 @@ namespace MauiNurAppTemplate.Helpers
 
         private static void OnNurApi_DisconnectedEvent(object? sender, NurApi.NurEventArgs e)
         {
-            Utilities.ShowSnackbar("Reader disconnected!", Colors.Red, Colors.Black);
-            App.DeviceDiscovery.Start();
+            Utilities.ShowSnackbar("Reader disconnected!", Colors.Red, Colors.Black);            
+            App.Nur.AutoReconnect = true;
         }
 
         private static void OnNurApi_ConnectionStatusEvent(object? sender, NurTransportStatus e)

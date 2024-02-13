@@ -16,7 +16,6 @@
 	Last used connection saved in settings for auto connect when app start.
 	Connecting/disconnecting handling when the application is active/inactive
 
-
 #### Sample View Inventory	
 	TxLevel adjust using 'Slider' (Helpers/ExpirationWatcher.cs needed)
 	Sound generation while reading

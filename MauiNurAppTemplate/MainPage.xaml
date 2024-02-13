@@ -2,16 +2,32 @@
 <ContentPage
     x:Class="MauiNurAppTemplate.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mct="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui">
+
+    <ContentPage.Behaviors>
+        <mct:StatusBarBehavior StatusBarColor="#324C86" StatusBarStyle="LightContent"></mct:StatusBarBehavior>
+    </ContentPage.Behaviors>
 
     <NavigationPage.TitleView>        
-        <Label Padding="10" HorizontalOptions="Center" TextColor="White" FontSize="Large" Text="Main page" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ImageButton Margin="10" Grid.Column="0" HorizontalOptions="Start" BackgroundColor="Transparent" Source="gear_white.png" Clicked="OnSettings" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"></ImageButton>
+            <Image Grid.Column="1" HorizontalOptions="Center" BackgroundColor="Transparent" Source="dotnet_bot.png" HeightRequest="70" WidthRequest="70" Aspect="AspectFit"/>
+
+        </Grid>
     </NavigationPage.TitleView>
-    
+
     <ContentPage.Content>
 
-        <StackLayout Margin="0,20">
-            <Button  BackgroundColor="DarkRed" Clicked="OnReader" CornerRadius="8" HorizontalOptions="Center" Text="Reader connection" TextColor="White" WidthRequest="180" />
+        <StackLayout Margin="0,20">            
             <Button Margin="0,20" BackgroundColor="DarkBlue" Clicked="OnInventory" HorizontalOptions="Center" Text="Inventory" TextColor="White" WidthRequest="180" />
             <Button BackgroundColor="DarkBlue" Clicked="OnBarcode" CornerRadius="8" HorizontalOptions="Center" Text="Barcode" TextColor="White" WidthRequest="180" />
         </StackLayout>

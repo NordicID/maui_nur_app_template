@@ -25,7 +25,15 @@ namespace MauiNurAppTemplate
             ActivityRunning = false;
             StartStopRead = "START";
             TxLevelText = "";      
-            SilenceMode = false;
+            SilenceMode = false;            
+        }
+
+        private void OnNur_DisconnectedEvent(object? sender, NurEventArgs e)
+        {
+            //It's possible that reader disconnects in middle of reading operation.
+            //make sure UI shows "not scanning"
+            ActivityRunning = false;
+            StartStopRead = "START";
         }
 
         private void OnTxLevelSetWatcher_Expired(object? sender, EventArgs e)
@@ -76,7 +84,7 @@ namespace MauiNurAppTemplate
                 Utilities.ShowErrorSnackbar(ex.Message);
             }
 
-            Utilities.PlayTagsAddedSound(0);
+            Utilities.PlayTagsAddedSound(0); //Stop sound
             
             Debug.WriteLine("Pause");
             
@@ -190,6 +198,7 @@ namespace MauiNurAppTemplate
         {            
             App.Nur.InventoryStreamEvent += OnNur_InventoryStreamEvent;
             App.Nur.IOChangeEvent += OnNur_IOChangeEvent;
+            App.Nur.DisconnectedEvent += OnNur_DisconnectedEvent;
 
             txLevelSetWatcher = new ExpirationWatcher();
             txLevelSetWatcher.Expired += OnTxLevelSetWatcher_Expired;
@@ -223,7 +232,8 @@ namespace MauiNurAppTemplate
 
             App.Nur.InventoryStreamEvent -= OnNur_InventoryStreamEvent;
             App.Nur.IOChangeEvent -= OnNur_IOChangeEvent;
-                        
+            App.Nur.DisconnectedEvent -= OnNur_DisconnectedEvent;
+
             txLevelSetWatcher.Expired -= OnTxLevelSetWatcher_Expired;
             txLevelSetWatcher.Dispose();
         }

@@ -16,9 +16,9 @@ namespace MauiNurAppTemplate
             return base.OnBackButtonPressed();
         }
 
-        private async void OnReader(object sender, EventArgs e)
+        private async void OnSettings(object sender, EventArgs e)
         {
-            await ReaderConnect.SelectReader(this);
+            await Navigation.PushAsync(new SettingsPage());
         }
 
         private async void OnInventory(object sender, EventArgs e)

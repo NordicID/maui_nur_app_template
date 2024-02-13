@@ -109,6 +109,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\gear_white.png" />
 	  <None Remove="Resources\Raw\barcode_sound.wav" />
 	  <None Remove="Resources\Raw\System_error.mp3" />
 	  <None Remove="Resources\Raw\tick02.wav" />
@@ -143,6 +144,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\InventoryStreamPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SettingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

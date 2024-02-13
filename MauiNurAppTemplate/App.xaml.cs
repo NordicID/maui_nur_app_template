@@ -59,12 +59,12 @@ namespace MauiNurAppTemplate
             Nur.LogEvent += Nur_LogEvent;
 
             //Activate this if need to get more detailed log from reader. Error logs in to Nur_LogEvent are received in all cases.
-            //Nur.SetLogLevel(NurApi.LOG_ERROR|LOG_VERBOSE);
+            //Nur.SetLogLevel(NurApi.LOG_ERROR|LOG_VERBOSE|LOG_DATA);
 
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
 
             var navigationPage = new NavigationPage(new MainPage());
-            navigationPage.BarBackground = Colors.DarkBlue;
+            navigationPage.BarBackground = Color.FromArgb("#324C86");
             navigationPage.BarTextColor = Colors.White;
             
             MainPage = navigationPage;            
@@ -78,7 +78,8 @@ namespace MauiNurAppTemplate
 
         private void Nur_LogEvent(object? sender, LogEventArgs e)
         {
-            Debug.WriteLine("NURLOG:" + e.message);
+            Console.WriteLine("{0:MM/dd/yyy HH:mm:ss.fff}", DateTime.Now + " " + e.message);
+            //Debug.WriteLine(e.message);
         }
                 
         protected override void OnStart()
