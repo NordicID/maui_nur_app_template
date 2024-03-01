@@ -7,6 +7,10 @@ using System.Diagnostics;
 
 namespace MauiNurAppTemplate.Helpers
 {
+    /// <summary>
+    /// Handle reader connection. Disconnects when App Sleep or destroyed. Connects automatically to last connected device when app start.
+    /// Connects automatically in to integrated reader if exist.
+    /// </summary>
     public static class ReaderConnect
     {
         /// <summary>

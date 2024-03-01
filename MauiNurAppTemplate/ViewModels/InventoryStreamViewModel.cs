@@ -15,8 +15,7 @@ namespace MauiNurAppTemplate
         [ObservableProperty] bool _silenceMode;
         [ObservableProperty] bool _readTagModel;
 
-        private List<double>? txLevels;
-        ExpirationWatcher? txLevelSetWatcher;
+        private List<double>? txLevels;       
         private int _newTxLevel;
       
         public InventoryStreamViewModel()
@@ -35,26 +34,7 @@ namespace MauiNurAppTemplate
             ActivityRunning = false;
             StartStopRead = "START";
         }
-
-        private void OnTxLevelSetWatcher_Expired(object? sender, EventArgs e)
-        {
-            Debug.WriteLine("EXPRIRED");
-
-            //Make sure reader is connected before trying to adjust Tx level.
-            if (App.Nur.IsConnected())
-            {                
-                try
-                {
-                    App.Nur.TxLevel = _newTxLevel;
-                    Debug.WriteLine("New Tx Level:" + App.Nur.TxLevel);
-                }
-                catch (Exception ex)
-                {
-                    Utilities.ShowSnackbar(ex.Message, Colors.DarkRed, Colors.White, 5);
-                }
-            }            
-        }
-
+               
         /// <summary>
         /// Start or Stop inventory streaming
         /// </summary>
@@ -143,7 +123,7 @@ namespace MauiNurAppTemplate
             }
         }
 
-        public void SetTxLevelFromSlider(double sliderValue)
+        public void ShowSliderTxLevel(double sliderValue)
         {
             if (App.Nur.IsConnected())
             {
@@ -152,10 +132,25 @@ namespace MauiNurAppTemplate
                     val = App.DeviceCapabilites.txSteps - 1;
 
                 TxLevelText = txLevels[(int)val].ToString("0.00");
-                _newTxLevel = (int)val;
-
-                txLevelSetWatcher.Reset(350); //Do txLevel set action after no slide movement within 350ms
+                _newTxLevel = (int)val;                                
             }            
+        }
+
+        public void SetNewTxLevel()
+        {
+            //Make sure reader is connected before trying to adjust Tx level.
+            if (App.Nur.IsConnected())
+            {
+                try
+                {
+                    App.Nur.TxLevel = _newTxLevel;
+                    Debug.WriteLine("New Tx Level:" + App.Nur.TxLevel);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.ShowSnackbar(ex.Message, Colors.DarkRed, Colors.White, 5);
+                }
+            }
         }
 
         /// <summary>
@@ -199,10 +194,7 @@ namespace MauiNurAppTemplate
             App.Nur.InventoryStreamEvent += OnNur_InventoryStreamEvent;
             App.Nur.IOChangeEvent += OnNur_IOChangeEvent;
             App.Nur.DisconnectedEvent += OnNur_DisconnectedEvent;
-
-            txLevelSetWatcher = new ExpirationWatcher();
-            txLevelSetWatcher.Expired += OnTxLevelSetWatcher_Expired;
-
+                        
             if(App.Nur.IsConnected())
             { 
                 TagCount = App.Nur.GetTagStorage().Count.ToString();
@@ -232,34 +224,35 @@ namespace MauiNurAppTemplate
 
             App.Nur.InventoryStreamEvent -= OnNur_InventoryStreamEvent;
             App.Nur.IOChangeEvent -= OnNur_IOChangeEvent;
-            App.Nur.DisconnectedEvent -= OnNur_DisconnectedEvent;
-
-            txLevelSetWatcher.Expired -= OnTxLevelSetWatcher_Expired;
-            txLevelSetWatcher.Dispose();
+            App.Nur.DisconnectedEvent -= OnNur_DisconnectedEvent;                        
         }
 
         private void OnNur_InventoryStreamEvent(object? sender, NurApiDotNet.NurApi.InventoryStreamEventArgs e)
-        {
+        {            
             //Let's show only count at this point.
             TagStorage storage = App.Nur.GetTagStorage();
-            TagCount = storage.Count.ToString();
 
-            if(!SilenceMode && App.Nur.IsInventoryStreamRunning())
-                Utilities.PlayTagsAddedSound(e.data.tagsAdded);                          
+            //storage must lock before dealing with it
+            lock (storage)
+            {
+                TagCount = storage.Count.ToString();
 
-            /* ==================
-            //Inventoried tags are now added or updated in to the internal TagStore
-            TagStorage storage = App.Nur.GetTagStorage();
+                /* ==================
+                //Inventoried tags are now added or updated in to the internal TagStore
+                
+                //Get list of tags added and updated.
+                Dictionary<byte[], Tag> added = storage.GetAddedTags();
+                Dictionary<byte[], Tag> updated = storage.GetUpdatedTags();
 
-            //Get list of tags added.
-            Dictionary<byte[], Tag> added = storage.GetAddedTags();
-            Dictionary<byte[], Tag> updated = storage.GetUpdatedTags();
+                //Handle added and updated.. and then clear
 
-            //Handle added and updated.. and then clear
+                added.Clear();
+                updated.Clear();
+                ==================== */
+            }
 
-            added.Clear();
-            updated.Clear();
-            ==================== */
+            if (!SilenceMode && App.Nur.IsInventoryStreamRunning())
+                Utilities.PlayTagsAddedSound(e.data.tagsAdded);
 
             if (e.data.stopped)
             {

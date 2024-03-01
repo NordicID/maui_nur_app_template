@@ -1,5 +1,3 @@
-using CommunityToolkit.Maui.Storage;
-using System.Diagnostics;
 using static MauiNurAppTemplate.Utilities;
 
 namespace MauiNurAppTemplate;
@@ -18,7 +16,14 @@ public partial class InventoryStreamPage : ContentPage
 
     void OnTxLevelChanged(object sender, ValueChangedEventArgs args)
     {
-        _viewModel.SetTxLevelFromSlider(args.NewValue);
+        //User still moving slider. Show only TxLevel value at this point.
+        _viewModel.ShowSliderTxLevel(args.NewValue);
+    }
+
+    void OnDragCompleted(object sender, EventArgs args)
+    {        
+        //User stop moving slider so let's set new txlevel
+        _viewModel.SetNewTxLevel();
     }
 
     private void OnStartStop(object sender, EventArgs e)
