@@ -16,7 +16,7 @@
                 <Label FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Text=" mW" />
             </StackLayout>
 
-            <Slider HeightRequest="70" WidthRequest="280" Value="{Binding SliderValue}" ValueChanged="OnTxLevelChanged" />            
+            <Slider HeightRequest="70" WidthRequest="280" Value="{Binding SliderValue}" DragCompleted="OnDragCompleted" ValueChanged="OnTxLevelChanged" />            
             <Button Margin="10,5" CornerRadius="70" BackgroundColor="DarkBlue" Clicked="OnStartStop" HorizontalOptions="Center" FontSize="Large" Text="{Binding StartStopRead}" TextColor="White" HeightRequest="140" WidthRequest="140" />
             
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
