@@ -17,7 +17,7 @@
 	Connecting/disconnecting handling when the application is active/inactive
 
 #### Sample View Inventory	
-	TxLevel adjust using 'Slider' (Helpers/ExpirationWatcher.cs needed)
+	TxLevel adjust using 'Slider'
 	Sound generation while reading
 	Reader trigger for start/stop inventory streaming.	
 	Share inventory results as *.csv
