@@ -26,3 +26,18 @@
 	Success beep generated.
 	Reader trigger for start/stop
 	(Helpers/ReadBarcode.cs)
+
+## Installation
+### Debug
+#### Android physical
+1. Install USB Device Connectivity
+
+Tools -> Get Tools and Features -> Individual Components -> USB Device Connectivity
+
+2. Install Android SDK Manager USB driver
+
+Tools -> Android -> Android SDK Manager -> Tools -> Extras -> Google USB Driver
+
+3. Restart VS
+
+Now the run drop-down box should have an Android Local Devices
