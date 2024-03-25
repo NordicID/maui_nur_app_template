@@ -88,6 +88,9 @@ namespace MauiNurAppTemplate
                 {
                     BarcodeText = result;
                     App.BarcodeSuccessBeep.Play();
+                } else
+                {
+                    App.ErrorBeep.Play();
                 }
             }
             else
