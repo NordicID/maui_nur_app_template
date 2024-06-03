@@ -1,5 +1,4 @@
-﻿using MauiNurAppTemplate.Helpers;
-using MauiNurAppTemplate.Views;
+﻿using MauiNurAppTemplate.Views;
 
 namespace MauiNurAppTemplate
 {
@@ -29,10 +28,10 @@ namespace MauiNurAppTemplate
         private async void OnBarcode(object sender, EventArgs e)
         {
             if (App.Nur.IsConnected())
-            {
+            {                
                 if (App.ReaderAccessory != null)
                 {
-                    if (App.ReaderAccessory.hasImagerScanner())
+                    if (App.ReaderAccessory.Value.hasImagerScanner())
                     {
                         //Imager found
                         await Navigation.PushAsync(new BarcodePage());
