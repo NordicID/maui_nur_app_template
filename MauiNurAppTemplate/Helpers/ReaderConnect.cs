@@ -274,11 +274,12 @@ namespace MauiNurAppTemplate.Helpers
                 App.DeviceCapabilites = App.Nur.Capabilites;
                 try
                 {
-                    App.ReaderAccessory = App.Nur.AccGetConfig();                                        
+                   App.ReaderAccessory = App.Nur.AccGetConfig();
+                   App.IsAccessories = true;
                 }
                 catch(Exception)
                 {
-                    App.ReaderAccessory=null;
+                    App.IsAccessories = false;
                     //Utilities.ShowToast("No accessories");
                 }
 

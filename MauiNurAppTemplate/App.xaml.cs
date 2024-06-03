@@ -18,7 +18,8 @@ namespace MauiNurAppTemplate
         /// </summary>
         public static ReaderInfo? ReaderInfo { get; set; }       
         public static DeviceCapabilites? DeviceCapabilites { get; set; }        
-        public static AccessoryConfig? ReaderAccessory {  get; set; } //NOTE: this is null if reader has no accessories (usually fixed readers)
+        public static AccessoryConfig ReaderAccessory {  get; set; }
+        public static bool IsAccessories { get; set; } = false; //After connect, this flag goes true if device has any accessories like barcode scanner
 
         /// <summary>
         /// Use this when need to read other banks than just EPC
@@ -45,7 +46,7 @@ namespace MauiNurAppTemplate
         public App()
         {
             InitializeComponent();
-
+                        
             //Loading sounds ready to play. Make sure these sound files found from "Resources\Raw"
             ErrorBeep = AudioManager.Current.CreatePlayer(FileSystem.OpenAppPackageFileAsync("System_error.mp3").GetAwaiter().GetResult());
             TagSeenTick = AudioManager.Current.CreatePlayer(FileSystem.OpenAppPackageFileAsync("tick02.wav").GetAwaiter().GetResult());

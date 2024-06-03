@@ -28,10 +28,10 @@ namespace MauiNurAppTemplate
         private async void OnBarcode(object sender, EventArgs e)
         {
             if (App.Nur.IsConnected())
-            {                
-                if (App.ReaderAccessory != null)
+            {
+                if (App.IsAccessories)
                 {
-                    if (App.ReaderAccessory.Value.hasImagerScanner())
+                    if (App.ReaderAccessory.hasImagerScanner())
                     {
                         //Imager found
                         await Navigation.PushAsync(new BarcodePage());
