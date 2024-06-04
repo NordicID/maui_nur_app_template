@@ -285,7 +285,16 @@ namespace MauiNurAppTemplate.Helpers
 
                 Preferences.Set("last_connected_reader", App.Nur.ConnectedDeviceUri.ToString());                               
                 List<double> txLevels = App.DeviceCapabilites.GetTxLevels();
-                Utilities.ShowSnackbar("Reader connected! (" + App.ReaderInfo.altSerial + ")", Colors.DarkGreen, Colors.White);                
+
+                if (App.IsAccessories)
+                {
+                    NurApi.AccessoryBatteryInfo batinfo = App.Nur.AccGetBatteryInfo();
+                    Utilities.ShowSnackbar("Reader connected! (" + App.ReaderInfo.altSerial + ") Batt:" + batinfo.Percentage.ToString()+"%" , Colors.DarkGreen, Colors.White);
+                }
+                else
+                {
+                    Utilities.ShowSnackbar("Reader connected! (" + App.ReaderInfo.altSerial + ")", Colors.DarkGreen, Colors.White);
+                }
 
             }
             catch (Exception ex)
