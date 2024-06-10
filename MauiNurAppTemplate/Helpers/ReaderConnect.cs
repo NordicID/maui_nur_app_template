@@ -13,6 +13,8 @@ namespace MauiNurAppTemplate.Helpers
     /// </summary>
     public static class ReaderConnect
     {
+        private static CancellationTokenSource _connectionTimeoutCts;
+
         /// <summary>
         /// Init reader connection related event handlers
         /// </summary>
@@ -123,6 +125,47 @@ namespace MauiNurAppTemplate.Helpers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex, $"Error reader select: {ex.Message}");
+            }
+        }
+
+        private static void StartConnectionTimeout()
+        {
+            CancelConnectionTimeout();
+
+            _connectionTimeoutCts = new CancellationTokenSource();
+            var token = _connectionTimeoutCts.Token;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(10), token);
+                    if (!token.IsCancellationRequested)
+                    {
+                        App.ErrorBeep.Play();
+                        Utilities.ShowSnackbar("UNABLE TO CONNECT READER!\n* Make sure the reader is power up.\n* Make sure the reader is not already connected..", Colors.Orange,Colors.Black,10);
+                        
+                        await Task.Delay(TimeSpan.FromSeconds(5), token);
+                        if (!token.IsCancellationRequested)
+                        {
+                            ShowConnecting();
+                        }                     
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Task was cancelled, no need to handle this exception
+                }
+            }, token);
+        }
+
+        private static void CancelConnectionTimeout()
+        {
+            if (_connectionTimeoutCts != null)
+            {
+                _connectionTimeoutCts.Cancel();
+                _connectionTimeoutCts.Dispose();
+                _connectionTimeoutCts = null;
             }
         }
 
@@ -254,13 +297,21 @@ namespace MauiNurAppTemplate.Helpers
             switch (e)
             {
                 case NurTransportStatus.Connected:
+                    CancelConnectionTimeout();
                     break;
                 case NurTransportStatus.Connecting:
-                    Utilities.ShowSnackbar("Connecting to:\n" + App.Nur.LastConnectUri, Colors.Yellow, Colors.Black, 100);
+                    ShowConnecting();
                     break;
                 case NurTransportStatus.Disconnected:
+                    CancelConnectionTimeout();
                     break;
             }
+        }
+
+        private static void ShowConnecting()
+        {
+            Utilities.ShowSnackbar("Connecting to:\n" + App.Nur.LastConnectUri, Colors.Yellow, Colors.Black, 100);
+            StartConnectionTimeout();
         }
 
         private static void OnNurApi_ConnectedEvent(object? sender, NurApi.NurEventArgs e)
