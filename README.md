@@ -45,7 +45,7 @@ Now the run drop-down box should have an Android Local Devices
 ## Creating Visual Studio project using .NET MAUI RFID App template
 
 
-1. Copy `.NET MAUI RFID App.zip` from [Releases](https://github.com/NordicID/maui_nur_app_template/releases) in to your Windows PC `Documents/Visual Studio 2022/Templates/ProjectTemplates` folder.
+1. Copy `NET_MAUI_RFID_App.zip` from [Releases](https://github.com/NordicID/maui_nur_app_template/releases) in to your Windows PC `Documents/Visual Studio 2022/Templates/ProjectTemplates` folder.
 2. Open Visual Studio 2022
 3. Create new project
 4. Select template ".NET MAUI RFID App" (use search key: "RFID")
