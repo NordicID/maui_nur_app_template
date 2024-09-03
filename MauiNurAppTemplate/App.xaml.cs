@@ -96,8 +96,7 @@ namespace MauiNurAppTemplate
             if (Nur.IsConnected())
             {
                 if (KeepNurConnectedWhileInactive)
-                {
-                    KeepNurConnectedWhileInactive = false; //One time operation
+                {                   
                     Debug.WriteLine("OnSleep() KEEP CONNECTION UP");
                     return; //Wanted to keep connection up
                 }                

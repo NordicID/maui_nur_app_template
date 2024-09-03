@@ -1,5 +1,5 @@
 ﻿#if __ANDROID__
-using NordicID.NurApi.Android.Helpers;
+using NurApiDotNet.Android;
 #endif
 using NurApiDotNet;
 using System.Diagnostics;

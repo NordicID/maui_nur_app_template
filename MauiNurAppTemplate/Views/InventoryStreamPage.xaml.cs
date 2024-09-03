@@ -41,8 +41,7 @@ public partial class InventoryStreamPage : ContentPage
         _viewModel.Stop(); //Stop inventory if not already stopped.
         
         if (App.Nur.GetTagStorage().Count > 0)
-        {
-            App.KeepNurConnectedWhileInactive = true;
+        {           
             await ShareAsCsv(this, "Inventory_results", TagStorageToCsv(App.Nur.GetTagStorage()));            
         }
         else
@@ -53,13 +52,25 @@ public partial class InventoryStreamPage : ContentPage
     }
        
     protected override void OnAppearing()
-    {        
+    {
+        //Let's keep reader connection up as long we are in InventoryPage
+        App.KeepNurConnectedWhileInactive = true;
+
+        //Let's keep display on as long we are in InventoryPage (prevent to go sleep)
+        DeviceDisplay.Current.KeepScreenOn = true;
+
         _viewModel.Init();      
         base.OnAppearing();
     }
 
     protected override void OnDisappearing()
     {
+        //Leaving from inventory page. Let reader disconnect when app inactive.
+        App.KeepNurConnectedWhileInactive = false;
+
+        //Let display shut down after user inactivity
+        DeviceDisplay.Current.KeepScreenOn = false;
+
         _viewModel.Release();        
         base.OnDisappearing();
     }
