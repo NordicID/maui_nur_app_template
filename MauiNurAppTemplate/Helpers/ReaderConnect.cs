@@ -14,7 +14,7 @@ namespace MauiNurAppTemplate.Helpers
     public static class ReaderConnect
     {
         private static CancellationTokenSource _connectionTimeoutCts;
-
+        private static bool _permissionAskPending = false;
         /// <summary>
         /// Init reader connection related event handlers
         /// </summary>
@@ -23,7 +23,7 @@ namespace MauiNurAppTemplate.Helpers
             App.Nur.ConnectedEvent += OnNurApi_ConnectedEvent;
             App.Nur.ConnectionStatusEvent += OnNurApi_ConnectionStatusEvent;
             App.Nur.DisconnectedEvent += OnNurApi_DisconnectedEvent;
-
+           
 #if __ANDROID__
             App.Nur.PermissionRequiredEvent += OnNur_PermissionRequiredEvent; ;
 #endif
@@ -32,19 +32,28 @@ namespace MauiNurAppTemplate.Helpers
 #if __ANDROID__
         private static void OnNur_PermissionRequiredEvent(object? sender, PermissionRequiredEventArgs e)
         {
-            Utilities.ShowSnackbar($"Attempting to request permissions for {e.Uri}...", Colors.White, Colors.Black, 10);
-            if (e.Uri.Scheme == "usb")
+            if(_permissionAskPending)
             {
-                NurApiUSBDevicePermissionRequest.Request(e.Uri, (isGranted) => OnUserPermissionResponse(e.Uri, isGranted)); // Forwarding callback result 
+                Debug.WriteLine("Permission Ask Pending " + e.Uri.ToString());
+                return;
+            }
+                        
+            if (e.Uri.Scheme == "usb")
+            {             
+                _permissionAskPending = true;
+                NurApiUSBDevicePermissionRequest.Request(e.Uri, (isGranted) => OnUserPermissionResponse(e.Uri, isGranted)); // Forwarding callback result                 
             }
         }
 
         // Handling permission result.
         private static void OnUserPermissionResponse(Uri connectionUri, bool isGranted)
-        {
+        {            
+            _permissionAskPending = false;
+            
             if (!isGranted)
             {
-                Utilities.ShowSnackbar($"Permission was not granted for the USB device ´{connectionUri}´",Colors.Orange,Colors.Black);
+                Utilities.ShowSnackbar($"Permission was not granted for the USB device ´{connectionUri}´",Colors.Orange,Colors.Black,6);
+                App.Nur.AutoReconnect = false;
                 return;
             }
 
@@ -53,6 +62,7 @@ namespace MauiNurAppTemplate.Helpers
             if (currentDeviceUri != null)
                 App.Nur.Disconnect();
 
+            App.Nur.AutoReconnect = true;
             App.Nur.Connect(connectionUri);
         }
 #endif
@@ -67,17 +77,21 @@ namespace MauiNurAppTemplate.Helpers
             try
             {                
                 List<string> deviceNames = new List<string>();
-
-                Uri currentDeviceUri = App.Nur.ConnectedDeviceUri;
-                string currentDeviceName = currentDeviceUri?.GetQueryParam("name") ?? "";
-                if (string.IsNullOrEmpty(currentDeviceName))
-                    currentDeviceName = currentDeviceUri?.GetQueryParam("productName") ?? "";
-
-                if (currentDeviceUri == null)
-                    currentDeviceName = "";
-
                 while (true)
                 {
+                    Uri currentDeviceUri = App.Nur.ConnectedDeviceUri;                
+
+                    string currentDeviceName = currentDeviceUri?.GetQueryParam("name") ?? "";
+                    if (string.IsNullOrEmpty(currentDeviceName))
+                        currentDeviceName = currentDeviceUri?.GetQueryParam("productName") ?? "";
+                                        
+                    if (currentDeviceUri != null && currentDeviceUri.Scheme == "usb")
+                    {
+                        currentDeviceName = "USB";
+                    }
+                    else if (currentDeviceUri == null)
+                        currentDeviceName = "";
+                
                     if (!string.IsNullOrEmpty(currentDeviceName))
                         deviceNames.Add("DISCONNECT: " + currentDeviceName);
                                         
@@ -110,7 +124,6 @@ namespace MauiNurAppTemplate.Helpers
                         }
                         else
                         {
-
                             ConnectToDevice(action);
                         }
                     }
@@ -171,9 +184,10 @@ namespace MauiNurAppTemplate.Helpers
 
         private static void DisconnectCurrentDevice()
         {
+            App.Nur.AutoReconnect = false;                      
             App.Nur.Disconnect();
-            App.Nur.AutoReconnect = false;
             Preferences.Set("last_connected_reader", "");
+            Debug.WriteLine("force Disconnect");
         }
 
         private static void ConnectToDevice(string selectedDevice)
@@ -187,8 +201,8 @@ namespace MauiNurAppTemplate.Helpers
                     {
                         Uri uri = App.DeviceDiscovery.ReadersDiscovered[selectedDevice];
                         if (uri.Scheme == "usb")
-                        {                           
-                            NurApiUSBDevicePermissionRequest.Request(uri, (isGranted) => OnUserPermissionResponse(uri, isGranted)); // Forwarding callback result                        
+                        {                            
+                            NurApiUSBDevicePermissionRequest.Request(uri, (isGranted) => OnUserPermissionResponse(uri, isGranted)); // Forwarding callback result                            
                             return; //Connection for this is in OnUserPermissionResponse handler
                         }
                     }
@@ -202,7 +216,8 @@ namespace MauiNurAppTemplate.Helpers
                     if (currentDeviceUri != null)
                         App.Nur.Disconnect();
 
-                    App.Nur.Connect(App.DeviceDiscovery.ReadersDiscovered[selectedDevice]);
+                    App.Nur.AutoReconnect = true;
+                    App.Nur.Connect(App.DeviceDiscovery.ReadersDiscovered[selectedDevice]);                   
                 }
             }
             catch (Exception ex)
@@ -238,9 +253,9 @@ namespace MauiNurAppTemplate.Helpers
                 rdrUri = new Uri(lastConnectedReaderUri);
 
             if (rdrUri != null)
-            {               
+            {          
                 App.Nur.AutoReconnect = true;
-                App.Nur.Connect(rdrUri);
+                App.Nur.Connect(rdrUri);     
             }            
         }
 
@@ -279,7 +294,14 @@ namespace MauiNurAppTemplate.Helpers
                     if (wasConnected)
                     {
                         App.Nur.AutoReconnect = true;
-                        App.Nur.Connect(); //Connect to existing
+                        if (App.Nur.LastConnectUri.Scheme=="usb")
+                        {                           
+                            App.Nur.Connect("usb://autoconnect");
+                        }
+                        else
+                        {                            
+                            App.Nur.Connect(); //Connect to existing
+                        }
                     }
                 }
             }
@@ -288,8 +310,18 @@ namespace MauiNurAppTemplate.Helpers
 
         private static void OnNurApi_DisconnectedEvent(object? sender, NurApi.NurEventArgs e)
         {
-            Utilities.ShowSnackbar("Reader disconnected!", Colors.Red, Colors.Black);            
-            App.Nur.AutoReconnect = true;
+            Debug.WriteLine("Disconnected");
+            Utilities.ShowSnackbar("Reader disconnected!", Colors.Red, Colors.Black);
+
+            if (App.Nur.AutoReconnect == true)
+            {
+                if(App.Nur.LastConnectUri.Scheme == "usb")
+                {
+                    Debug.WriteLine("Reconnect to:" + App.Nur.LastConnectUri.ToString());
+                    App.Nur.Connect("usb://autoconnect");
+                    return;
+                }
+            }          
         }
 
         private static void OnNurApi_ConnectionStatusEvent(object? sender, NurTransportStatus e)
@@ -299,7 +331,7 @@ namespace MauiNurAppTemplate.Helpers
                 case NurTransportStatus.Connected:
                     CancelConnectionTimeout();
                     break;
-                case NurTransportStatus.Connecting:
+                case NurTransportStatus.Connecting:                    
                     ShowConnecting();
                     break;
                 case NurTransportStatus.Disconnected:
@@ -334,7 +366,15 @@ namespace MauiNurAppTemplate.Helpers
                     //Utilities.ShowToast("No accessories");
                 }
 
-                Preferences.Set("last_connected_reader", App.Nur.ConnectedDeviceUri.ToString());                               
+                App.Nur.AutoReconnect = true;
+
+                if (App.Nur.ConnectedDeviceUri.Scheme == "usb")
+                    Preferences.Set("last_connected_reader", "usb://autoconnect"); //USB Autoconnect is best option.
+                else
+                {                    
+                    Preferences.Set("last_connected_reader", App.Nur.ConnectedDeviceUri.ToString());
+                }
+
                 List<double> txLevels = App.DeviceCapabilites.GetTxLevels();
 
                 if (App.IsAccessories)

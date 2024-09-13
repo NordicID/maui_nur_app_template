@@ -1,5 +1,6 @@
 ﻿using NurApiDotNet;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MauiNurAppTemplate.Helpers
@@ -27,6 +28,11 @@ namespace MauiNurAppTemplate.Helpers
             if (IsDiscovering) { Stop(); } //Stop before starting new one
             IsDiscovering = true;
             NurDeviceDiscovery.Start(_nurDeviceDiscoveryCallback);
+           
+#if __ANDROID__
+            Uri uri = new Uri("usb://autoconnect");
+            ReadersDiscovered.TryAdd("USB", uri);
+#endif
         }
 
         public void Stop()
@@ -50,6 +56,9 @@ namespace MauiNurAppTemplate.Helpers
 
             if (discoveredDevice.Uri != null)
             {
+                if (discoveredDevice.Uri.Scheme == "usb")
+                    return; //We do not deal with specified usb uri's. USBAutoconnect takes care of it.
+
                 if (ReadersDiscovered.TryAdd(devName, discoveredDevice.Uri))
                 {
                     //Added

@@ -138,19 +138,19 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.3" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.80" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.80" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.82" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.82" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="NordicID.NurApi.Net" Version="6.0.0" />
 		<PackageReference Include="NordicID.NurApi.TagCodec" Version="4.0.1" />
-		<PackageReference Include="NordicID.NurApi.USBTransport" Version="4.0.6" />
+		<PackageReference Include="NordicID.NurApi.USBTransport" Version="4.0.7" />
 		<PackageReference Include="NordicID.NurApi.Utils" Version="4.0.1" />
-		<PackageReference Include="Plugin.Maui.Audio" Version="3.0.0" />
+		<PackageReference Include="Plugin.Maui.Audio" Version="3.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
 	  <PackageReference Include="NordicID.NurApi.Android">
-	    <Version>5.0.1</Version>
+	    <Version>5.0.2</Version>
 	  </PackageReference>
 	</ItemGroup>
 
