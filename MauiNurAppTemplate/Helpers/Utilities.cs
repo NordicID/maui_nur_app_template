@@ -7,13 +7,21 @@ using System.Text;
 using static NurApiDotNet.NurApi;
 
 
+
 namespace MauiNurAppTemplate
 {
     public static class Utilities
-    {       
-        
+    {
+        private static Task? pendingDelay = null;
+
         public static void ShowToast(string message,ToastDuration duration = ToastDuration.Long, double textSize=14)
-        {            
+        {
+            if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+            {
+                //Show toast different way
+                return;
+            }
+
             var toast = Toast.Make(message, duration, textSize);
 
             if (MainThread.IsMainThread)
@@ -29,8 +37,17 @@ namespace MauiNurAppTemplate
             }
         }
 
-        public static void ShowSnackbar(string message, Color backGround, Color textColor, int durationSec = 4)
+        public static async void ShowSnackbar(string message, Color backGround, Color textColor, int durationSec = 4)
         {
+            if(DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+            {
+                //Show snack different way
+                //var popup = new ProgressPopup();
+               // Page curPage = NavigationPage.CurrentPage;
+                //var result = await NavigationPage.CurrentPage.ShowPopupAsync(popup);
+                return;
+            }    
+
             SnackbarOptions snackbarOptions = new SnackbarOptions();
             snackbarOptions.CornerRadius = 5;
             snackbarOptions.BackgroundColor = backGround;

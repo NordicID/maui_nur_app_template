@@ -20,6 +20,18 @@ public partial class SettingsPage : ContentPage
         await ReaderConnect.SelectReader(this);
     }
 
+    private async void OnUpdate(object sender, EventArgs e)
+    {
+        if(!App.Nur.IsConnected())
+        {
+            Utilities.ShowErrorSnackbar("Reader not connected");
+            return;
+        }
+
+        //Go to reader update page
+        await Navigation.PushAsync(new UpdatePage());
+    }
+
     protected override void OnAppearing()
     {
         _viewModel.Init();
@@ -31,4 +43,5 @@ public partial class SettingsPage : ContentPage
         _viewModel.Release();
         base.OnDisappearing();
     }
+        
 }

@@ -21,6 +21,7 @@ namespace MauiNurAppTemplate
         public static AccessoryConfig ReaderAccessory {  get; set; }
         public static bool IsAccessories { get; set; } = false; //After connect, this flag goes true if device has any accessories like barcode scanner
 
+        public static bool IsUpdating { get; set; } = false;
         /// <summary>
         /// Use this when need to read other banks than just EPC
         /// </summary>

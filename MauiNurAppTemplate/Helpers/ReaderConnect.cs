@@ -1,7 +1,9 @@
 ﻿#if __ANDROID__
 using NurApiDotNet.Android;
 #endif
+using Microsoft.Maui.Controls;
 using NurApiDotNet;
+using System;
 using System.Diagnostics;
 
 
@@ -107,6 +109,8 @@ namespace MauiNurAppTemplate.Helpers
                     {
                         deviceNames.Add("No readers found!. Try 'Refresh'");
                     }
+                                        
+                    deviceNames.Add("Connect to IP address..");
 
                     string action = await page.DisplayActionSheet("Readers", "Cancel", "Refresh", deviceNames.ToArray());
 
@@ -121,6 +125,11 @@ namespace MauiNurAppTemplate.Helpers
                         else if (action.Contains("DISCONNECT"))
                         {
                             DisconnectCurrentDevice();
+                        }
+                        else if (action.StartsWith("Connect to IP"))
+                        {
+                            //Add possibility to create socket connection in to the External reader.
+                            ConnectToExtReader(page);
                         }
                         else
                         {
@@ -141,9 +150,32 @@ namespace MauiNurAppTemplate.Helpers
             }
         }
 
+        private static async void ConnectToExtReader(Page page)
+        {           
+            string extReader = Preferences.Get("ExtReader","");
+            string result = await page.DisplayPromptAsync("Socket connection", "Example: '192.168.1.123:4333", "OK", "Cancel", "<IP address>:<port>", 40, Keyboard.Default, extReader);
+
+            try
+            {
+                if (result.StartsWith("Cancel")) return;
+                Uri newUri = new Uri("tcp://" + result + "/?name=External reader");
+                App.Nur.Connect(newUri);
+                Preferences.Set("ExtReader", newUri.Host + ":" + newUri.Port.ToString());
+                return;
+
+            }
+            catch (Exception ex)
+            {
+                await page.DisplayAlert("Operation failed!", ex.Message, "OK");
+                return;
+            }                            
+        }
+
         private static void StartConnectionTimeout()
         {
             CancelConnectionTimeout();
+            if (App.IsUpdating)
+                return;
 
             _connectionTimeoutCts = new CancellationTokenSource();
             var token = _connectionTimeoutCts.Token;

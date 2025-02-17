@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiNurAppTemplate.Views.UpdatePage"
+             Title="Update Page">
+    <VerticalStackLayout>
+        <Label Margin="0,20" Text="Device update" VerticalOptions="Start" HorizontalOptions="Center" FontSize="40" FontAttributes="Bold" />
+        <Label Text="{Binding TextStatus}" TextColor="Blue" HorizontalOptions="Center" FontSize="Large"></Label>
+        <Label Text="{Binding TextProgress}" Margin="0,10" TextColor="Green" HeightRequest="100" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Medium"></Label>
+        <ActivityIndicator Color="Green" IsRunning="{Binding ActivityIsRunning}" IsVisible="True" Scale="2"></ActivityIndicator>
+
+        <Button Margin="0,30" Text="Update now!" Clicked="OnUpdateNow" IsEnabled="{Binding IsUpdateNowEnabled}" WidthRequest="180" HeightRequest="150" HorizontalOptions="Center" BackgroundColor="DarkGreen" TextColor="White" FontSize="Large"></Button>
+        <Button Margin="0,30" Text="Local update.." Clicked="OnLocalUpdate" IsEnabled="{Binding IsLocalEnabled}" WidthRequest="180" HorizontalOptions="Center" BackgroundColor="DarkBlue" TextColor="White" FontSize="Large"></Button>
+
+
+    </VerticalStackLayout>
+</ContentPage>
