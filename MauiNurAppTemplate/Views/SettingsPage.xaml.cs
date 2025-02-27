@@ -1,5 +1,9 @@
+using CommunityToolkit.Maui.Alerts;
 using MauiNurAppTemplate.Helpers;
 using MauiNurAppTemplate.ViewModels;
+using NurApiDotNet;
+using System.Text;
+
 
 namespace MauiNurAppTemplate.Views;
 
@@ -32,9 +36,31 @@ public partial class SettingsPage : ContentPage
         await Navigation.PushAsync(new UpdatePage());
     }
 
+    private async void OnShareLogs(object sender, EventArgs e)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int x = 0; x < App.LogStock.Count; x++)        
+            sb.AppendLine(App.LogStock[x]);
+        
+        await Utilities.ShareAsCsv(this,"UpdateLogs",sb.ToString());
+        App.LogStock.Clear();
+    }
+
     protected override void OnAppearing()
     {
         _viewModel.Init();
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (App.Nur.GetLogLevel() == NurApi.LOG_ERROR)
+            {
+                //No logs
+                LogEnableCheck.IsChecked = false;
+            }
+            else
+                LogEnableCheck.IsChecked = true;
+        });        
+
         base.OnAppearing();
     }
 
@@ -43,5 +69,16 @@ public partial class SettingsPage : ContentPage
         _viewModel.Release();
         base.OnDisappearing();
     }
-        
+
+    private void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        if(e.Value == true)
+        {
+            App.Nur.SetLogLevel(NurApi.LOG_ERROR| NurApi.LOG_VERBOSE|NurApi.LOG_USER);
+        }
+        else
+        {
+            App.Nur.SetLogLevel(NurApi.LOG_ERROR);
+        }
+    }
 }

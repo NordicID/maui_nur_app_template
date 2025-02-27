@@ -41,11 +41,11 @@ namespace MauiNurAppTemplate.ViewModels
         {
             if (e.niduEvent == NurUpdate.Event.LOG)
             {
-                //Console.WriteLine("LOG:" + e.msg);
+                App.Nur.VLog(e.msg);                
             }
             else if (e.niduEvent == NurUpdate.Event.STATUS)
-            {                
-                
+            {
+                App.Nur.VLog("NurUpdate.Event:Status = " + e.msg);
             }
             else if (e.niduEvent == NurUpdate.Event.PROGRESS)
             {
@@ -53,23 +53,23 @@ namespace MauiNurAppTemplate.ViewModels
             }
             else if (e.niduEvent == NurUpdate.Event.VALIDATE)
             {
-               
+                App.Nur.VLog("NurUpdate.Event:VALIDATE = " + e.msg);
             }
             else if (e.niduEvent == NurUpdate.Event.PRG_ITEM_START)
             {
-                
+                App.Nur.VLog("NurUpdate.Event:PRG_ITEM_START = " + e.msg);
             }
             else if(e.niduEvent == NurUpdate.Event.PRG_BEGIN)
             {
-                
+                App.Nur.VLog("NurUpdate.Event:PRG_BEGIN = " + e.msg);
             }
             else if (e.niduEvent == NurUpdate.Event.PRG_END)
             {
-
+                App.Nur.VLog("NurUpdate.Event:PRG_END = " + e.msg);
             }
             else if (e.niduEvent == NurUpdate.Event.PRG_ERROR)
             {
-
+                App.Nur.VLog("NurUpdate.Event:PRG_ERROR = " + e.msg);
             }
 
         }

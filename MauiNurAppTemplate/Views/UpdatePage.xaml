@@ -6,11 +6,11 @@
     <VerticalStackLayout>
         <Label Margin="0,20" Text="Device update" VerticalOptions="Start" HorizontalOptions="Center" FontSize="40" FontAttributes="Bold" />
         <Label Text="{Binding TextStatus}" TextColor="Blue" HorizontalOptions="Center" FontSize="Large"></Label>
-        <Label Text="{Binding TextProgress}" Margin="0,10" TextColor="Green" HeightRequest="100" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Medium"></Label>
-        <ActivityIndicator Color="Green" IsRunning="{Binding ActivityIsRunning}" IsVisible="True" Scale="2"></ActivityIndicator>
+        <Label Text="{Binding TextProgress}" Margin="0,5" TextColor="Green" HeightRequest="80" HorizontalOptions="Center" FontAttributes="Bold" FontSize="Medium"></Label>
+        <ActivityIndicator Color="Green" IsRunning="{Binding ActivityIsRunning}" IsVisible="True" Scale="1"></ActivityIndicator>
 
-        <Button Margin="0,30" Text="Update now!" Clicked="OnUpdateNow" IsEnabled="{Binding IsUpdateNowEnabled}" WidthRequest="180" HeightRequest="150" HorizontalOptions="Center" BackgroundColor="DarkGreen" TextColor="White" FontSize="Large"></Button>
-        <Button Margin="0,30" Text="Local update.." Clicked="OnLocalUpdate" IsEnabled="{Binding IsLocalEnabled}" WidthRequest="180" HorizontalOptions="Center" BackgroundColor="DarkBlue" TextColor="White" FontSize="Large"></Button>
+        <Button Margin="0,5" Text="Update now!" Clicked="OnUpdateNow" IsEnabled="{Binding IsUpdateNowEnabled}" WidthRequest="180" HeightRequest="110" HorizontalOptions="Center" BackgroundColor="DarkGreen" TextColor="White" FontSize="Large"></Button>
+        <Button Margin="0,10" Text="Local update.." Clicked="OnLocalUpdate" IsEnabled="{Binding IsLocalEnabled}" WidthRequest="180" HorizontalOptions="Center" BackgroundColor="DarkBlue" TextColor="White" FontSize="Large"></Button>
 
 
     </VerticalStackLayout>

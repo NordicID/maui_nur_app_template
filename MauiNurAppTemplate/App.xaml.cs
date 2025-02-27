@@ -39,6 +39,8 @@ namespace MauiNurAppTemplate
         public static IAudioPlayer? TagSeenTick;
         public static IAudioPlayer? BarcodeSuccessBeep;
 
+        public static List<string> LogStock { get; set; }
+
         /// <summary>
         /// When true, reader not disconnected when App going to inactive state (OnSleep)        
         /// </summary>
@@ -48,6 +50,8 @@ namespace MauiNurAppTemplate
         {
             InitializeComponent();
                         
+            LogStock = new List<string>();
+
             //Loading sounds ready to play. Make sure these sound files found from "Resources\Raw"
             ErrorBeep = AudioManager.Current.CreatePlayer(FileSystem.OpenAppPackageFileAsync("System_error.mp3").GetAwaiter().GetResult());
             TagSeenTick = AudioManager.Current.CreatePlayer(FileSystem.OpenAppPackageFileAsync("tick02.wav").GetAwaiter().GetResult());
@@ -61,7 +65,8 @@ namespace MauiNurAppTemplate
             Nur.LogEvent += Nur_LogEvent;
 
             //Activate this if need to get more detailed log from reader. Error logs in to Nur_LogEvent are received in all cases.
-            //Nur.SetLogLevel(NurApi.LOG_ERROR|LOG_VERBOSE|LOG_DATA);
+            App.Nur.SetLogLevel(NurApi.LOG_ERROR);
+            //Nur.SetLogLevel(NurApi.LOG_ERROR|LOG_VERBOSE);
 
             Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
 
@@ -80,7 +85,11 @@ namespace MauiNurAppTemplate
 
         private void Nur_LogEvent(object? sender, LogEventArgs e)
         {
-            Console.WriteLine("{0:MM/dd/yyy HH:mm:ss.fff}", DateTime.Now + " " + e.message);
+            string message = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + " : " + e.message;
+            LogStock.Add(message);
+            Console.WriteLine(message);
+
+            //Console.WriteLine("{0:MM/dd/yyy HH:mm:ss.fff}", DateTime.Now + " " + e.message);
             //Debug.WriteLine(e.message);
         }
                 

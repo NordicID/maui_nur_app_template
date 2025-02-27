@@ -147,7 +147,6 @@
 		<PackageReference Include="NordicID.NurApi.TagCodec" Version="4.0.1" />
 		<PackageReference Include="NordicID.NurApi.USBTransport" Version="4.0.7" />
 		<PackageReference Include="NordicID.NurApi.Utils" Version="4.0.1" />
-		<PackageReference Include="NordicID.UpdateLib.Net" Version="3.2.0" />
 		<PackageReference Include="Plugin.Maui.Audio" Version="3.0.1" />
 	</ItemGroup>
 
@@ -155,6 +154,10 @@
 	  <PackageReference Include="NordicID.NurApi.Android">
 	    <Version>5.0.2</Version>
 	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\nur_update_library\NurUpdateLib.Net\NordicID.UpdateLib.Net.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

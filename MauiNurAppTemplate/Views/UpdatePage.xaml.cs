@@ -21,12 +21,14 @@ public partial class UpdatePage : ContentPage
     protected override void OnAppearing()
     {
         _viewModel.Init();
+        DeviceDisplay.Current.KeepScreenOn = true;
         base.OnAppearing();
     }
 
     protected override void OnDisappearing()
     {
         _viewModel.Release();
+        DeviceDisplay.Current.KeepScreenOn = false;
         base.OnDisappearing();
     }
 
