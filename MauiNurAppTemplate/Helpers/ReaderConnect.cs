@@ -249,19 +249,21 @@ namespace MauiNurAppTemplate.Helpers
         /// </summary>
         public static void AppSleep()
         {
-            if (App.Nur.IsConnected())
+            if (App.Nur.IsConnected() || App.Nur.ConnectionStatus == NurTransportStatus.Connecting)
             {
                 Preferences.Set("was_connected", true);
-                try
-                {
-                    App.Nur.Disconnect();
-                }
-                catch (Exception) { }
             }
             else
             {
                 Preferences.Set("was_connected", false);
             }
+
+            //Force call disconnect
+            try
+            {
+                App.Nur.Disconnect();
+            }
+            catch (Exception) { }
         }
 
         /// <summary>
