@@ -94,6 +94,8 @@ namespace MauiNurAppTemplate.Helpers
                         deviceNames.Add("No readers found!. Try 'Refresh'");
                     }
 
+                    deviceNames.Add("Connect to IP address..");
+
                     string action = await page.DisplayActionSheet("Readers", "Cancel", "Refresh", deviceNames.ToArray());
 
                     if (!string.IsNullOrEmpty(action) && !action.Equals("Cancel"))
@@ -108,9 +110,13 @@ namespace MauiNurAppTemplate.Helpers
                         {
                             DisconnectCurrentDevice();
                         }
+                        else if (action.StartsWith("Connect to IP"))
+                        {
+                            //Add possibility to create socket connection in to the External reader.
+                            ConnectToExtReader(page);
+                        }
                         else
                         {
-
                             ConnectToDevice(action);
                         }
                     }
@@ -125,6 +131,30 @@ namespace MauiNurAppTemplate.Helpers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex, $"Error reader select: {ex.Message}");
+            }
+        }
+
+        private static async void ConnectToExtReader(Page page)
+        {
+            string extReader = Preferences.Get("ExtReader", "");
+            string result = await page.DisplayPromptAsync("Socket connection", "Example: '192.168.1.123:4333", "OK", "Cancel", "<IP address>:<port>", 40, Keyboard.Default, extReader);
+
+            if (result == null)
+                return;
+
+            try
+            {
+                if (result.StartsWith("Cancel")) return;
+                Uri newUri = new Uri("tcp://" + result + "/?name=External reader");
+                App.Nur.Connect(newUri);
+                Preferences.Set("ExtReader", newUri.Host + ":" + newUri.Port.ToString());
+                return;
+
+            }
+            catch (Exception ex)
+            {
+                await page.DisplayAlert("Operation failed!", ex.Message, "OK");
+                return;
             }
         }
 
